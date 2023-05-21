@@ -65,6 +65,62 @@ class PessoaController {
       return res.status(500).json(error.message);
     }
   }
+
+  //localhost:3000/pessoas/1/matriculas/5
+  //localhost:3000/pessoas/:estudanteId/matriculas/:matriculaId
+  static async pegaOneMatricula(req, res) {
+    const { estudanteId, matriculaId } = req.params; //Parametro na URL
+    try {
+      const oneMatricula = await database.Matriculas.findOne({
+        where: { id: Number(matriculaId), estudante_id: Number(estudanteId) },
+      });
+      return res.status(200).json(oneMatricula);
+    } catch (error) {
+      return res.status(500).json(error.message);
+    }
+  }
+
+  //localhost:3000/pessoas/2/matriculas
+  static async createMatricula(req, res) {
+    const { estudante_id } = req.params;
+    const newMatricula = { ...req.body, estudante_id: Number(estudante_id) };
+    try {
+      const newMatriculaCreate = await database.Matriculas.create(newMatricula);
+      return res.status(200).json(newMatriculaCreate);
+    } catch (error) {
+      return res.status(500).json(error.message);
+    }
+  }
+
+  static async updateMatricula(req, res) {
+    const { estudanteId, matriculaId } = req.params; //Parametro na URL
+    const newUpdateMatricula = req.body;
+    try {
+      await database.Matriculas.update(newUpdateMatricula, {
+        where: { id: Number(matriculaId), estudante_id: Number(estudanteId) },
+      });
+      const matriculaUpdate = await database.Matriculas.findOne({
+        where: { id: Number(matriculaId) },
+      });
+      return res.status(200).json(matriculaUpdate);
+    } catch (error) {
+      return res.status(500).json(error.message);
+    }
+  }
+
+  static async deleteMatricula(req, res) {
+    const { estudanteId, matriculaId } = req.params; //Parametro na URL
+    try {
+      await database.Matriculas.destroy({
+        where: { id: Number(matriculaId), estudante_id: Number(estudanteId) },
+      });
+      return res
+        .status(200)
+        .json({ message: `Registro ${id} removido com sucesso...!` });
+    } catch (error) {
+      return res.status(500).json(error.message);
+    }
+  }
 }
 
 //Disponibiliza para o restante do codigo
